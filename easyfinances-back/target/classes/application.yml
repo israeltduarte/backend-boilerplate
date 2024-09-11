@@ -1,0 +1,78 @@
+server:
+  port: 8081
+  servlet:
+    context-path: '/easyfinances-back/'
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: easyfinances-back
+  data:
+    web:
+      pageable:
+        page-parameter: 0
+        default-page-size: 50
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyfinancesdb
+    username: postgres
+    password: postgres
+  jpa:
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: update
+      jdbc:
+        lob.non-contextual-creation: true
+    properties:
+      originPrefix: EF
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    show-sql: true
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      fail-on-empty-beans: false
+  output:
+    ansi:
+      enabled: ALWAYS
+
+logging:
+  level:
+    br.isertech.com.easyfinances-back: TRACE
+    root: INFO
+    org.springframework.web: DEBUG
+    org.hibernate: INFO
+    web: DEBUG
+
+ef:
+  serviceRegistry:
+    username: serviceregistry
+    password: vento123
+  auth:
+    jwtSecret: test
+    jwtExpirationMs: 14400000
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: 'http://${ef.serviceRegistry.username}:${ef.serviceRegistry.password}@localhost:8761/eureka'
+  instance:
+    hostname: localhost
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitbreakerInstance:
+        slidingWindowSize: 100
+        permittedNumberOfCallsInHalfOpenState: 10
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 100
+        waitDurationInOpenState: 60s
+        failureRateThreshold: 80
+  retry:
+    instances:
+      retryInstance:
+        max-attempts: 3
+        waitDuration: 5s
