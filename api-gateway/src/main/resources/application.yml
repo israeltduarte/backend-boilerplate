@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: easyfinances-back
+          uri: lb://EASYFINANCES-BACK
+          predicates:
+            - Path=/easyfinances-back/**
+
+ef:
+  serviceRegistry:
+    username: serviceregistry
+    password: vento123
+
+eureka:
+  client:
+    service-url:
+      defaultZone: 'http://${ef.serviceRegistry.username}:${ef.serviceRegistry.password}@localhost:8761/eureka'
+    enabled: true
+  instance:
+    hostname: localhost
